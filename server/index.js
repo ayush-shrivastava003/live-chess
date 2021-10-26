@@ -40,7 +40,7 @@ server.get('/:room', (req, res) => {
     let roomID = req.params.room
     if (req.params.room in clients) { // DEFINITELY going to need a db to scale this up
         if (clients[req.params.room].length >= 2) {
-            res.send('Sorry, this game is already in progress.')
+            send(res, 'inprog.html')
         } else {
             send(res, 'game.html')
     }} else {
