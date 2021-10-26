@@ -1,0 +1,43 @@
+body {
+    background : #222222;
+    display : grid;
+    grid-template-columns : 1fr;
+    grid-template-rows : 1fr 1fr 1fr;
+}
+
+input {
+    outline : none;
+    border : solid gray 1px;
+    background : black;
+    color : gray;
+    justify-self : center;
+}
+
+input[type="button"] {
+    color : lime;
+}
+
+p {
+    color : white;
+    justify-self : center;
+}
+
+#main-container {
+    justify-self : center;
+    text-align : center;
+}
+
+.null {
+    justify-self : center;
+    width : 100vw;
+    height : calc(100vh / 3);
+}
+
+#jrd::backdrop {
+    background : #00000088;
+}
+
+#jrd {
+    background : #222222;
+    border : solid gray 1px;
+}

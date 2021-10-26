@@ -36,7 +36,8 @@ body {
 .waiting {
     animation : waiting linear 1s infinite;
     position : relative;
-    left : 50%;
+    width : 5vmin;
+    left : calc(50% - 2.5vmin);
 }
 
 @keyframes waiting {

@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    Hello, world!
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chess</title>
+        <link href="../assets/index.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <span class="null"></span>
+        <div id="main-container">
+            <p>Welcome to Live Chess!</p>
+            <input type="button" id="random" value="create room" onclick="console.log('new room')"><br><br>
+            <input type="button" id="jrb" value="join room" onclick="document.getElementById('jrd').showModal()">
+            <dialog id="jrd">
+                <input type="text" id="roomcode" minlength="4" maxlength="4" placeholder="enter room code">
+                <input type="button" id="join" value="join" onclick="console.log('join room')"><br>
+                <input type="button" id="cancel" value="cancel" onclick="document.getElementById('jrd').close()">
+            </dialog>
+        </div>
+        <span class="null"></span>
+    </body>
 </html>
