@@ -1,0 +1,3 @@
+I would like to have the server not do any calculations
+instead could you please make it so the first person who joins a room is designated "host" and the second player is connected by websocket directlty to the host
+if this isn't possible let me know
