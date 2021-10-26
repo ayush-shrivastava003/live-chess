@@ -17,14 +17,18 @@ body {
     left : calc(50vw - 25vmin);
     top : calc(50vh + 25vmin);
     width : 40vmin;
+    border : solid gray 1px;
+    outline : none;
     background : black;
-    color : lime;
+    color : gray;
 }
 
 #gobtn {
     position : absolute;
     left : calc(50vw + 15vmin);
     top : calc(50vh + 25vmin);
+    border : solid gray 1px;
+    outline : none;
     background : black;
     color : lime;
 }
