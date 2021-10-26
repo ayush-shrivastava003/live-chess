@@ -10,6 +10,7 @@ const HTTPServer = http.Server(server)
 const socket = new Server(HTTPServer)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+server.use('/assets', express.static(__dirname + '/../assets/'))
 
 function send(res, file) {
     return res.sendFile(file, {root: path.join(__dirname + '/../views')})
@@ -20,7 +21,7 @@ socket.on('connection', (socket) => {
 })
 
 server.get('/', (req, res) => {
-    send(res, 'hello.html')
+    send(res, 'index.html')
 })
 
 HTTPServer.listen(3000, ()=> {
