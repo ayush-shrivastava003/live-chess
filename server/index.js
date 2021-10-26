@@ -12,6 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 var clients = {'1234': []}
 
 server.use('/assets', express.static(__dirname + '/../assets/'))
+server.use(express.json())
 
 function send(res, file) {
     return res.sendFile(file, {root: path.join(__dirname + '/../views')})
@@ -37,7 +38,6 @@ server.get('/', (req, res) => {
 })
 
 server.get('/:room', (req, res) => {
-    let roomID = req.params.room
     if (req.params.room in clients) { // DEFINITELY going to need a db to scale this up
         if (clients[req.params.room].length >= 2) {
             send(res, 'inprog.html')
@@ -46,6 +46,14 @@ server.get('/:room', (req, res) => {
     }} else {
         res.send('Couldn\'t find that room!')
     }
+})
+
+server.post('/', (req, res) => {
+   let code = req.body.roomcode
+    if (!clients[code]) {
+        clients[code] = []
+        return res.status(200)
+    } else {return res.status(400).send('This code already is in use!')}
 })
 
 HTTPServer.listen(3000, ()=> {
