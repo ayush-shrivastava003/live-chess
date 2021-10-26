@@ -32,3 +32,18 @@ body {
     background : black;
     color : lime;
 }
+
+.waiting {
+    animation : waiting linear 1s infinite;
+    position : relative;
+    left : 50%;
+}
+
+@keyframes waiting {
+    0% {
+        transform : rotate(0deg);
+    }
+    100% {
+        transform : rotate(360deg);
+    }
+}
