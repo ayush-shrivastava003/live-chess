@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Live Chess</title>
+        <link rel="stylesheet" href="../assets/style.css" type="text/css">
+    </head>
+    <body>
+        <div id="board"></div>
+        <div id="input">
+            <input type="text" id="entry" minlength="4" maxlength="4" placeholder="enter move (ex: a0b0)">
+            <input type="button" id="gobtn" value="move" onclick="console.log('domove')">
+        </div>
+        <dialog id="cdg">
+            <p>waiting for other player...</p><br>
+            <img class="waiting" src="../assets/waiting.png">
+        </dialog>
+        <script src="../assets/js/script.js"></script>
+    </body>
+</html>
