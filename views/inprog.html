@@ -11,10 +11,19 @@
                 justify-self : center;
                 color : lime;
             }
+            input {
+                justify-self : center;
+            }
         </style>
     </head>
     <body>
         <p>Whoops!</p>
-        <p>unfortunately this room is already occupied!</p>
+        <p>unfortunately this room is already occupied!</p><br><br>
+        <input type="button" value="go back" onclick="goback()">
+        <script>
+            function goback () {
+                window.location.pathname = "/";
+            }
+        </script>
     </body>
 </html>
