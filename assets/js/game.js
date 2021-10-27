@@ -2,6 +2,8 @@ const cdg = document.getElementById("cdg");
 const input = document.getElementById("entry");
 const board = document.getElementById("board");
 
+document.getElementById("roomcode").textContent = window.location.pathname.slice(1);
+
 class Game {
     constructor (ishost) {
         this.ishost = (ishost===undefined?false:true);

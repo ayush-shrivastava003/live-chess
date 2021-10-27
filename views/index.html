@@ -36,9 +36,12 @@
                 method: 'POST',
                 headers: {'Content-type': 'application/json'},
                 body: JSON.stringify({roomcode: code})
-            })
-            if (r.status == 200) {window.location.href = `/${code}`}
-            else if (r.status == 400) {alert("This code is already in use!")}
+            });
+            if (r.status === 200) {
+                window.location.pathname = "/"+code
+            } else if (r.status == 400) {
+                alert("This code is already in use!")
+            }
         })
     </script>
 </html>

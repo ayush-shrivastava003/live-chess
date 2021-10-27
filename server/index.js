@@ -9,7 +9,7 @@ const server = express()
 const HTTPServer = http.Server(server)
 const socket = new Server(HTTPServer)
 const __dirname = dirname(fileURLToPath(import.meta.url))
-var clients = {'1234': []}
+let clients = {'1234': []}
 
 server.use('/assets', express.static(__dirname + '/../assets/'))
 server.use(express.json())
@@ -30,6 +30,9 @@ socket.on('connection', (socket) => {
     socket.on('disconnect', () => {
         clients[url].splice(clients[url].indexOf(socket.id), 1)
         socket.broadcast.emit('player disconnect')
+        if (clients[url].length === 0) {
+            delete clients[url]
+        }
     })
 })
 
@@ -49,10 +52,12 @@ server.get('/:room', (req, res) => {
 })
 
 server.post('/', (req, res) => {
-   let code = req.body.roomcode
+    let code = req.body.roomcode
+    // console.log(code);
     if (!clients[code]) {
+        // console.log("new");
         clients[code] = []
-        return res.status(200)
+        return res.status(200).send("good code")
     } else {return res.status(400).send('This code already is in use!')}
 })
 
