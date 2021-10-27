@@ -126,12 +126,15 @@ class Game {
         }
     }
     move (mvs) {
+        if (!this.turn) {
+            return;
+        }
         const letters = "abcdefgh";
         let x1 = Number(mvs[1]);
         let y1 = letters.indexOf(mvs[0].toLowerCase());
         let x2 = Number(mvs[3]);
         let y2 = letters.indexOf(mvs[2].toLowerCase());
-        if (y1 < 0 || y2 < 0 || x1.toString() === "NaN" || x2.toString === "NaN" || x1 > 7 || y1 > 7) {
+        if (y1 < 0 || y2 < 0 || x1.toString() === "NaN" || x2.toString === "NaN" || x1 > 7 || x2 > 7) {
             return;
         }
         const iw = this.board[y1][x1] < 7;
@@ -153,6 +156,9 @@ class Game {
         this.selc = [0, 0];
     }
     click (x, y) {
+        if (!this.turn) {
+            return;
+        }
         if (!this.sel) {
             const col = board.children[y*8+x].src[board.children[y*8+x].src.indexOf(".svg")-2];
             if (col === "E" || col !== (this.ishost?"W":"B")) {
@@ -173,7 +179,7 @@ class Game {
             this.cmove(x, y);
             return;
         }
-        if ((this.board[y][x] < 7) !== this.ishost) {
+        if ((this.board[y][x] < 7) === this.ishost) {
             board.children[this.selc[1]*8+this.selc[0]].className = "";
             this.sel = false;
             this.selc = [0, 0];

@@ -21,11 +21,11 @@ p {
     height : calc(100vh / 3);
 }
 
-#jrd::backdrop {
+dialog::backdrop {
     background : #00000088;
 }
 
-#jrd {
+dialog {
     background : #222222;
     border : solid gray 1px;
 }
@@ -37,4 +37,20 @@ p {
 #createDialog {
     background : #222222;
     border : solid gray 1px;
+}
+
+a:link {
+    color : #0088ff;
+}
+
+a:link:hover {
+    color : #00aaff;
+}
+
+a:visited {
+    color : #8800ff;
+}
+
+a:visited:hover {
+    color : #aa00ff;
 }

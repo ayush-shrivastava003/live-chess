@@ -16,7 +16,8 @@
             <dialog id="createDialog">
                 <input type="text" id="code" minlength="4" maxlength="4" placeholder="new room code">
                 <input type="button" id="create" value="create"><br>
-                <input type="button" value="cancel" onclick="document.getElementById('createDialog').close()">
+                <input type="button" value="cancel" onclick="document.getElementById('createDialog').close()"><br><br>
+                <input type="button" value="random code" onclick="dorand()">
             </dialog><br><br>
             <input type="button" id="jrb" value="join room" onclick="document.getElementById('jrd').showModal()">
             <dialog id="jrd">
@@ -24,19 +25,28 @@
                 <input type="button" id="join" value="join" onclick="window.location.replace(`/${document.getElementById('joincode').value}`)">
                 <br>
                 <input type="button" id="cancel" value="cancel" onclick="document.getElementById('jrd').close()">
-            </dialog>
+            </dialog><br><br>
+            <input type="button" value="credits" onclick="document.getElementById('credits').showModal()">
             <dialog id="credits">
                 <!-- the image credits -->
 				<p>all images used in this project are from <a href="https://commons.wikimedia.org/wiki/Main_Page" target="_blank">Wikimedia</a>, were created by the following user and are under the following copyright: <a href="https://en.wikipedia.org/wiki/User:Cburnett" target="_blank">en:User:Cburnett</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">CC BY-SA 3.0</a>,<br>via Wikimedia Commons</p>
+                <br><br>
+                <p>
+                    Front end programming and design was done by Tristan Schartman<br>
+                    Back end programming and websocket interfaces were done by Ayush Shrivastava (thank you, you're a life saver)
+                </p>
+                <input type="button" value="close" onclick="document.getElementById('credits').close()">
             </dialog>
         </div>
         <span class="null"></span>
     </body>
     <script>
         const button = document.getElementById('create')
+        const cin = document.getElementById("code");
 
         create.addEventListener("click", async () => {
-            let code = document.getElementById('code').value
+            let code = cin.value
+            code = code.toUpperCase();
             let r = await fetch('/', {
                 method: 'POST',
                 headers: {'Content-type': 'application/json'},
@@ -53,10 +63,19 @@
                 document.getElementById("join").click();
             }
         });
-        document.getElementById("code").addEventListener("keyup", (e) => {
+        cin.addEventListener("keyup", (e) => {
             if (e.code.toString() === "Enter") {
                 button.click();
             }
         });
+        function dorand () {
+            let code = "";
+            for (let i = 0; i < Number(cin.getAttribute("maxlength")); i ++) {
+                code += "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"[Math.floor(Math.random() * 36)];
+            }
+            cin.value = code;
+            button.click();
+            code.value = "";
+        }
     </script>
 </html>

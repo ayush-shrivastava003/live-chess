@@ -18,8 +18,18 @@ function send(res, file) {
     return res.sendFile(file, {root: path.join(__dirname + '/../views')})
 }
 
+function closeroom (url, socket) {
+    try {clients} catch (err) {return;}
+    if (clients[url].length === 0) {
+        delete clients[url];
+    } else if (clients[url].length === 1) {
+        socket.broadcast.emit('player disconnect')
+    }
+}
+
 socket.on('connection', (socket) => {
     let url = socket.handshake.query.url.split('/')[3]
+    console.log(clients, url);
     clients[url].push(socket.id)
     socket.broadcast.emit('player connect')
     if (clients[url].length === 1) {
@@ -34,12 +44,7 @@ socket.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         clients[url].splice(clients[url].indexOf(socket.id), 1)
-        socket.broadcast.emit('player disconnect')
-        if (url in clients) {
-            if (clients[url].length === 0) {
-                delete clients[url]
-            }
-        }
+        setTimeout(()=>{closeroom(url, socket)}, 2000);
     })
 
     socket.on("start", () => {
@@ -49,7 +54,6 @@ socket.on('connection', (socket) => {
 
 server.get('/', (req, res) => {
     send(res, 'index.html')
-    console.log("connected")
 })
 
 server.get('/:room', (req, res) => {
