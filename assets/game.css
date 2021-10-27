@@ -16,6 +16,10 @@
     height : calc(50vmin / 8);
 }
 
+#board > .sel {
+    background : tan;
+}
+
 #entry {
     position : absolute;
     left : calc(50vw - 25vmin);

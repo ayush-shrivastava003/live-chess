@@ -28,8 +28,8 @@ socket.on('connection', (socket) => {
         socket.broadcast.emit("nothost");
     }
 
-    socket.on('move', (board) => { // when client emits a change to the board
-        socket.broadcast.emit('move', board) // server emits to other clients
+    socket.on('move', (board) => {
+        socket.broadcast.emit('move', board)
     })
 
     socket.on('disconnect', () => {
@@ -49,10 +49,11 @@ socket.on('connection', (socket) => {
 
 server.get('/', (req, res) => {
     send(res, 'index.html')
+    console.log("connected")
 })
 
 server.get('/:room', (req, res) => {
-    if (req.params.room in clients) { // DEFINITELY going to need a db to scale this up
+    if (req.params.room in clients) {
         if (clients[req.params.room].length >= 2) {
             send(res, 'inprog.html')
         } else {
@@ -64,9 +65,7 @@ server.get('/:room', (req, res) => {
 
 server.post('/', (req, res) => {
     let code = req.body.roomcode
-    // console.log(code);
     if (!clients[code]) {
-        // console.log("new");
         clients[code] = []
         return res.status(200).send("good code")
     } else {return res.status(400).send('This code already is in use!')}

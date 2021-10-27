@@ -48,5 +48,15 @@
                 alert("This code is already in use!")
             }
         })
+        document.getElementById("joincode").addEventListener("keyup", (e) => {
+            if (e.code.toString() === "Enter") {
+                document.getElementById("join").click();
+            }
+        });
+        document.getElementById("code").addEventListener("keyup", (e) => {
+            if (e.code.toString() === "Enter") {
+                button.click();
+            }
+        });
     </script>
 </html>

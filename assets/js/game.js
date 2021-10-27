@@ -6,6 +6,7 @@ for (let y = 0; y < 8; y ++) {
     for (let x = 0; x < 8; x ++) {
         const img = document.createElement("img");
         img.style.cssText = "--x:"+x+";--y:"+y+";";
+        img.addEventListener("mousedown", function(){game.click(x, y)});
         board.appendChild(img);
     }
 }
@@ -63,10 +64,12 @@ class Game {
     constructor (ishost) {
         this.ishost = (ishost===undefined?false:true);
         this.turn = this.ishost;
-        this.imgs = ["E","WP","WR","WN","WB","WQ","WK","BP","BR","BN","BB","BQ","BK"];
+        this.imgs = ["EE","WP","WR","WN","WB","WQ","WK","BP","BR","BN","BB","BQ","BK"];
         this.board = [];
         this.kcl = true;
         this.kcr = true;
+        this.sel = false;
+        this.selc = [0, 0];
         this.reset();
     }
     boot () {
@@ -90,6 +93,8 @@ class Game {
         this.turn = this.ishost;
         this.kcl = true;
         this.kcr = true;
+        this.sel = false;
+        this.selc = [0, 0];
         this.boot();
         this.loaddef();
         this.display();
@@ -103,6 +108,7 @@ class Game {
             }
         }
         this.display();
+        this.turn = true;
     }
     format () {
         let f = [];
@@ -115,6 +121,9 @@ class Game {
         const v1 = this.board[y2][x2];
         this.board[y2][x2] = this.board[y1][x1];
         this.board[y1][x1] = v1;
+        if (this.board[y1][x1] !== 0) {
+            this.board[y1][x1] = 0;
+        }
     }
     move (mvs) {
         const letters = "abcdefgh";
@@ -132,6 +141,45 @@ class Game {
         this.swap(x1, y1, x2, y2);
         this.display();
         socket.emit("move", this.format());
+        this.turn = false;
+    }
+    cmove (x, y) {
+        if ((this.board[y][x] < 7 !== this.ishost) || this.board[y][x] === 0) {
+            const letters = "abcdefgh";
+            this.move(letters[this.selc[1]]+this.selc[0]+letters[y]+x);
+        }
+        board.children[this.selc[1]*8+this.selc[0]].className = "";
+        this.sel = false;
+        this.selc = [0, 0];
+    }
+    click (x, y) {
+        if (!this.sel) {
+            const col = board.children[y*8+x].src[board.children[y*8+x].src.indexOf(".svg")-2];
+            if (col === "E" || col !== (this.ishost?"W":"B")) {
+                return;
+            }
+            this.sel = true;
+            this.selc = [x, y];
+            board.children[this.selc[1]*8+this.selc[0]].className = "sel";
+            return;
+        }
+        if (this.selc[0] === x && this.selc[1] === y) {
+            board.children[this.selc[1]*8+this.selc[0]].className = "";
+            this.sel = false;
+            this.selc = [0, 0];
+            return;
+        }
+        if (this.board[y][x] === 0) {
+            this.cmove(x, y);
+            return;
+        }
+        if ((this.board[y][x] < 7) !== this.ishost) {
+            board.children[this.selc[1]*8+this.selc[0]].className = "";
+            this.sel = false;
+            this.selc = [0, 0];
+            return;
+        }
+        this.cmove(x, y);
     }
     display () {
         for (let y = 0; y < 8; y ++) {
@@ -145,6 +193,14 @@ class Game {
 let game = new Game();
 
 function domove () {
-    game.move(entry.value);
-    entry.value = "";
+    game.move(input.value);
+    input.value = "";
 }
+
+input.addEventListener("keyup", (e) => {if(e.code.toString()==="Enter"){domove()}});
+
+document.addEventListener("visibilitychange", (e) => {
+    if (document.visibilityState === "visible") {
+        input.focus();
+    }
+});
