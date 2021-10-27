@@ -22,6 +22,11 @@ socket.on('connection', (socket) => {
     let url = socket.handshake.query.url.split('/')[3]
     clients[url].push(socket.id)
     socket.broadcast.emit('player connect')
+    if (clients[url].length === 1) {
+        socket.broadcast.emit("host");
+    } else {
+        socket.broadcast.emit("nothost");
+    }
 
     socket.on('move', (board) => { // when client emits a change to the board
         socket.broadcast.emit('move', {board: board}) // server emits to other clients
@@ -33,6 +38,10 @@ socket.on('connection', (socket) => {
         if (clients[url].length === 0) {
             delete clients[url]
         }
+    })
+
+    socket.on("start", () => {
+        socket.broadcast.emit("start")
     })
 })
 

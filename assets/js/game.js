@@ -2,6 +2,44 @@ const cdg = document.getElementById("cdg");
 const input = document.getElementById("entry");
 const board = document.getElementById("board");
 
+cdg.showModal();
+
+const socket = io.connect(window.location.origin, {query: `url=${window.location.href}`})
+
+socket.on('player connect', () => {
+    console.log('player connected')
+})
+
+socket.on('player disconnect', () => { // handle for when the other player disconnects
+    console.log('player disconnected')
+    if (!cdg.open) {
+        cdg.showModal();
+    }
+    game = new Game(true);
+})
+
+socket.on('move', (board) => {
+    console.log(board)
+})
+
+socket.on("host", () => {
+    game = new Game(true);
+})
+
+socket.on("nothost", () => {
+    socket.emit("start");
+    if (cdg.open) {
+        cdg.close();
+    }
+})
+
+socket.on("start", () => {
+    if (cdg.open) {
+        cdg.close();
+    }
+})
+
+
 document.getElementById("roomcode").textContent = window.location.pathname.slice(1);
 
 class Game {
@@ -35,4 +73,4 @@ class Game {
     }
 }
 
-const game = new Game();
+let game = new Game();
