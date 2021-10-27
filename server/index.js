@@ -35,8 +35,10 @@ socket.on('connection', (socket) => {
     socket.on('disconnect', () => {
         clients[url].splice(clients[url].indexOf(socket.id), 1)
         socket.broadcast.emit('player disconnect')
-        if (clients[url].length === 0) {
-            delete clients[url]
+        if (url in clients) {
+            if (clients[url].length === 0) {
+                delete clients[url]
+            }
         }
     })
 

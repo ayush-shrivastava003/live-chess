@@ -10,19 +10,14 @@ for (let y = 0; y < 8; y ++) {
     }
 }
 
-board.children[0].src = "../assets/pieces/WR.svg";
-board.children[1].src = "../assets/pieces/BR.svg";
-board.children[2].src = "../assets/pieces/WN.svg";
-board.children[3].src = "../assets/pieces/BN.svg";
-board.children[4].src = "../assets/pieces/WB.svg";
-board.children[5].src = "../assets/pieces/BB.svg";
-board.children[6].src = "../assets/pieces/WP.svg";
-board.children[7].src = "../assets/pieces/BP.svg";
-board.children[8].src = "../assets/pieces/WK.svg";
-board.children[9].src = "../assets/pieces/BQ.svg";
-board.children[10].src = "../assets/pieces/WK.svg";
-board.children[11].src = "../assets/pieces/BK.svg";
-board.children[12].src = "../assets/pieces/E.svg";
+for (let y = 0; y < 8; y ++) {
+    for (let x = 0; x < 8; x ++) {
+        const col = ((x+y)%2===0?"rgb(235,235,235)":"rgb(55,55,55)");
+        const d = document.createElement("div");
+        d.style.cssText = "--x:"+x+";--y:"+y+";background:"+col+";z-index:-1;";
+        board.appendChild(d);
+    }
+}
 
 cdg.showModal();
 
@@ -72,8 +67,7 @@ class Game {
         this.board = [];
         this.kcl = true;
         this.kcr = true;
-        this.boot();
-        this.loaddef();
+        this.reset();
     }
     boot () {
         input.value = "";
@@ -98,6 +92,10 @@ class Game {
         this.kcr = true;
         this.boot();
         this.loaddef();
+        this.display();
+    }
+    swap (x1, y1, x2, y2) {
+        //
     }
     move (mvs) {
         const letters = "abcdefgh";
@@ -116,7 +114,7 @@ class Game {
     display () {
         for (let y = 0; y < 8; y ++) {
             for (let x = 0; x < 8; x ++) {
-                board.children[y*8+x].src = "../assests/pieces/"+this.imgs[this.board[y][x]]+".svg";
+                board.children[y*8+x].src = "../assets/pieces/"+this.imgs[this.board[y][x]]+".svg";
             }
         }
     }
