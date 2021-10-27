@@ -29,3 +29,12 @@ p {
     background : #222222;
     border : solid gray 1px;
 }
+
+#createDialog::backdrop {
+    background : #00000088;
+}
+
+#createDialog {
+    background : #222222;
+    border : solid gray 1px;
+}

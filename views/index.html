@@ -15,7 +15,8 @@
             <input type="button" id="random" value="create room" onclick="document.getElementById('createDialog').showModal()">
             <dialog id="createDialog">
                 <input type="text" id="code" minlength="4" maxlength="4" placeholder="new room code">
-                <input type="button" id="create" value="create">
+                <input type="button" id="create" value="create"><br>
+                <input type="button" value="cancel" onclick="document.getElementById('createDialog').close()">
             </dialog><br><br>
             <input type="button" id="jrb" value="join room" onclick="document.getElementById('jrd').showModal()">
             <dialog id="jrd">
