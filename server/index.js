@@ -29,7 +29,7 @@ socket.on('connection', (socket) => {
     }
 
     socket.on('move', (board) => { // when client emits a change to the board
-        socket.broadcast.emit('move', {board: board}) // server emits to other clients
+        socket.broadcast.emit('move', board) // server emits to other clients
     })
 
     socket.on('disconnect', () => {

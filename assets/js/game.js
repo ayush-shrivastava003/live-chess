@@ -36,7 +36,7 @@ socket.on('player disconnect', () => { // handle for when the other player disco
 })
 
 socket.on('move', (board) => {
-    console.log(board)
+    game.unpack(board);
 })
 
 socket.on("host", () => {
@@ -94,8 +94,27 @@ class Game {
         this.loaddef();
         this.display();
     }
+    unpack (d) {
+        const rows = d.split("|");
+        for (let i = 0; i < rows.length; i ++) {
+            const row = rows[i].split(",");
+            for (let j = 0; j < row.length; j ++) {
+                this.board[i][j] = Number(row[j]);
+            }
+        }
+        this.display();
+    }
+    format () {
+        let f = [];
+        for (let i = 0; i < this.board.length; i ++) {
+            f.push(this.board[i].join(","));
+        }
+        return f.join("|");
+    }
     swap (x1, y1, x2, y2) {
-        //
+        const v1 = this.board[y2][x2];
+        this.board[y2][x2] = this.board[y1][x1];
+        this.board[y1][x1] = v1;
     }
     move (mvs) {
         const letters = "abcdefgh";
@@ -110,6 +129,9 @@ class Game {
         if (this.board[y1][x1] === 0 || iw !== this.ishost) {
             return;
         }
+        this.swap(x1, y1, x2, y2);
+        this.display();
+        socket.emit("move", this.format());
     }
     display () {
         for (let y = 0; y < 8; y ++) {
@@ -121,3 +143,8 @@ class Game {
 }
 
 let game = new Game();
+
+function domove () {
+    game.move(entry.value);
+    entry.value = "";
+}
