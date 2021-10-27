@@ -24,4 +24,13 @@ class Game {
         this.turn = this.ishost;
         this.boot();
     }
+    move (mvs) {
+        const letters = "abcdefgh";
+        let x1 = Number(mvs[1]);
+        let y1 = letters.indexOf(mvs[0].toLowerCase());
+        let x2 = Number(mvs[3]);
+        let y2 = letters.indexOf(mvs[2].toLowerCase());
+    }
 }
+
+const game = new Game();
