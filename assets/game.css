@@ -8,6 +8,14 @@
     color : lime;
 }
 
+#board > * {
+    position : absolute;
+    left : calc(50vmin / 8 * var(--x));
+    top : calc(50vmin / 8 * var(--y));
+    width : calc(50vmin / 8);
+    height : calc(50vmin / 8);
+}
+
 #entry {
     position : absolute;
     left : calc(50vw - 25vmin);

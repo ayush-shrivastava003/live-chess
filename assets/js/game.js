@@ -2,6 +2,14 @@ const cdg = document.getElementById("cdg");
 const input = document.getElementById("entry");
 const board = document.getElementById("board");
 
+for (let y = 0; y < 8; y ++) {
+    for (let x = 0; x < 8; x ++) {
+        const img = document.createElement("img");
+        img.style.cssText = "--x:"+x+";--y:"+y+";";
+        board.appendChild(img);
+    }
+}
+
 cdg.showModal();
 
 const socket = io.connect(window.location.origin, {query: `url=${window.location.href}`})
@@ -46,8 +54,12 @@ class Game {
     constructor (ishost) {
         this.ishost = (ishost===undefined?false:true);
         this.turn = this.ishost;
+        this.imgs = ["E","WP","WR","WN","WB","WQ","WK","BP","BR","BN","BB","BQ","BK"];
         this.board = [];
+        this.kcl = true;
+        this.kcr = true;
         this.boot();
+        this.loaddef();
     }
     boot () {
         input.value = "";
@@ -60,9 +72,18 @@ class Game {
             this.board.push(l);
         }
     }
+    loaddef () {
+        this.board[0] = [8, 9, 10, 11, 12, 10, 9, 8];
+        this.board[1] = [7, 7, 7, 7, 7, 7, 7, 7];
+        this.board[6] = [1, 1, 1, 1, 1, 1, 1, 1];
+        this.board[7] = [2, 3, 4, 5, 6, 4, 3, 2];
+    }
     reset () {
         this.turn = this.ishost;
+        this.kcl = true;
+        this.kcr = true;
         this.boot();
+        this.loaddef();
     }
     move (mvs) {
         const letters = "abcdefgh";
@@ -70,6 +91,20 @@ class Game {
         let y1 = letters.indexOf(mvs[0].toLowerCase());
         let x2 = Number(mvs[3]);
         let y2 = letters.indexOf(mvs[2].toLowerCase());
+        if (y1 < 0 || y2 < 0 || x1.toString() === "NaN" || x2.toString === "NaN" || x1 > 7 || y1 > 7) {
+            return;
+        }
+        const iw = this.board[y1][x1] < 7;
+        if (this.board[y1][x1] === 0 || iw !== this.ishost) {
+            return;
+        }
+    }
+    display () {
+        for (let y = 0; y < 8; y ++) {
+            for (let x = 0; x < 8; x ++) {
+                board.children[y*8+x].src = "../assests/pieces/"+this.imgs[this.board[y][x]]+".svg";
+            }
+        }
     }
 }
 
