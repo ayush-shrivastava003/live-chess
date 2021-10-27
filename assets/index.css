@@ -1,24 +1,12 @@
 body {
-    background : #222222;
     display : grid;
-    grid-template-columns : 1fr;
-    grid-template-rows : 1fr 1fr 1fr;
 }
 
 input {
-    outline : none;
-    border : solid gray 1px;
-    background : black;
-    color : gray;
     justify-self : center;
 }
 
-input[type="button"] {
-    color : lime;
-}
-
 p {
-    color : white;
     justify-self : center;
 }
 

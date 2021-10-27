@@ -1,9 +1,0 @@
-body {
-    background : #222222;
-    display : grid;
-}
-
-p {
-    justify-self : center;
-    color : lime;
-}

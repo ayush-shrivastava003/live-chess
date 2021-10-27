@@ -1,0 +1,18 @@
+body {
+    background : #222222;
+}
+
+p {
+    color : white;
+}
+
+input {
+    outline : none;
+    border : solid gray 1px;
+    background : black;
+    color : gray;
+}
+
+input[type="button"] {
+    color : lime;
+}
