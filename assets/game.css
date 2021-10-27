@@ -17,7 +17,7 @@
 }
 
 #board > .sel {
-    background : tan;
+    background : tan !important;
 }
 
 #entry {
@@ -31,6 +31,15 @@
     position : absolute;
     left : calc(50vw + 15vmin);
     top : calc(50vh + 25vmin);
+}
+
+#promote::backdrop {
+    background : #00000088;
+}
+
+#promote {
+    background : #222222;
+    border : solid gray 1px;
 }
 
 .waiting {

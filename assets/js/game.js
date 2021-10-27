@@ -1,3 +1,5 @@
+// import { moveMessagePortToContext } from "worker_threads";
+
 const cdg = document.getElementById("cdg");
 const input = document.getElementById("entry");
 const board = document.getElementById("board");
@@ -19,6 +21,10 @@ for (let y = 0; y < 8; y ++) {
         board.appendChild(d);
     }
 }
+
+function t(x,y){let c=board.children[y*8+x+64];c.className=c.className!==""?"":"sel"}
+function d(){game.ishost=true;game.turn=true}
+function p(x,y){game.px=x;game.py=y}
 
 cdg.showModal();
 
@@ -70,6 +76,9 @@ class Game {
         this.kcr = true;
         this.sel = false;
         this.selc = [0, 0];
+        this.px = 0;
+        this.py = 0;
+        this.store = [];
         this.reset();
     }
     boot () {
@@ -95,6 +104,8 @@ class Game {
         this.kcr = true;
         this.sel = false;
         this.selc = [0, 0];
+        this.px = 0;
+        this.py = 0;
         this.boot();
         this.loaddef();
         this.display();
@@ -124,6 +135,252 @@ class Game {
         if (this.board[y1][x1] !== 0) {
             this.board[y1][x1] = 0;
         }
+        let by = this.ishost?7:0;
+        if ((x1 === 0 && y1 === by) || (x2 === 0 && y2 === by)) {
+            this.kcl = false;
+        }
+        if ((x1 === 7 && y1 === by) || (x2 === 7 && y2 === by)) {
+            this.kcr = false;
+        }
+        if ((x1 === 5 && y1 === by) || (x2 === 5 && y2 === by)) {
+            this.kcl = false;
+            this.kcr = false;
+        }
+    }
+    pawn () {
+        let x = this.px;
+        let y = this.py;
+        let moves = [];
+        if (this.ishost) {
+            if (y > 0) {
+                if (this.board[y-1][x] === 0) {
+                    moves.push([x, y-1]);
+                    if (y > 1 && this.board[y-2][x] === 0 && y === 6) {
+                        moves.push([x, y-2]);
+                    }
+                }
+                if (x > 0 && (this.board[y-1][x-1] > 6)) {
+                    moves.push([x-1, y-1]);
+                }
+                if (x < 7) {
+                    if (this.board[y-1][x+1] > 6) {
+                        moves.push([x+1, y-1]);
+                    } else if (this.board[y-1][x+1] === 0 && this.board[y][x-1] === 7) {
+                        // moves.push([x-1, y-1]);
+                    }
+                }
+            }
+        } else if (y < 7) {
+            if (this.board[y+1][x] === 0) {
+                moves.push([x, y+1]);
+                if (y < 6 && this.board[y+2][x] === 0 & y === 1) {
+                    moves.push([x, y+2]);
+                }
+            }
+            if (x > 0 && (this.board[y+1][x-1] > 0 && this.board[y+1][x-1] < 7)) {
+                moves.push([x-1, y+1]);
+            }
+            if (x < 7 && (this.board[y+1][x+1] > 0 && this.board[y+1][x-1] < 7)) {
+                moves.push([x+1, y+1]);
+            }
+        }
+        for (let i = 0; i < moves.length; i ++) {
+            moves[i] = moves[i].join(",");
+        }
+        return moves;
+    }
+    rook () {
+        let x = this.px;
+        let y = this.py;
+        let moves = [];
+        let sx = x;
+        let sy = y;
+        for (let i = 0; i < x; i ++) {
+            sx -= 1;
+            if (this.board[y][sx] !== 0) {
+                if ((this.board[y][sx] < 7) !== this.ishost) {
+                    moves.push([sx, y]);
+                }
+                break;
+            }
+            moves.push([sx, y]);
+        }
+        sx = x;
+        for (let i = 0; i < 7-x; i ++) {
+            sx += 1;
+            if (this.board[y][sx] !== 0) {
+                if ((this.board[y][sx] < 7) !== this.ishost) {
+                    moves.push([sx, y]);
+                }
+                break;
+            }
+            moves.push([sx, y]);
+        }
+        for (let i = 0; i < y; i ++) {
+            sy -= 1;
+            if (this.board[sy][x] !== 0) {
+                if ((this.board[sy][x] < 7) !== this.ishost) {
+                    moves.push([x, sy]);
+                }
+                break;
+            }
+            moves.push([x, sy]);
+        }
+        sy = y;
+        for (let i = 0; i < 7-y; i ++) {
+            sy += 1;
+            if (this.board[sy][x] !== 0) {
+                if ((this.board[sy][x] < 7) !== this.ishost) {
+                    moves.push([x, sy]);
+                }
+                break;
+            }
+            moves.push([x, sy]);
+        }
+        for (let i = 0; i < moves.length; i ++) {
+            moves[i] = moves[i].join(",");
+        }
+        return moves;
+    }
+    knight () {
+        let x = this.px;
+        let y = this.py;
+        let moves = [[x-1, y+2], [x+1, y+2], [x-1, y-2], [x+1, y-2], [x-2, y-1], [x-2, y+1], [x+2, y-1], [x+2, y+1]];
+        for (let i = moves.length - 1; i >= 0; i --) {
+            let tx = moves[i][0];
+            let ty = moves[i][1];
+            if (tx < 0 || tx > 7 || ty < 0 || ty > 7) {
+                moves.splice(i, 1);
+                continue;
+            }
+            if (this.board[ty][tx] !== 0) {
+                if ((this.board[ty][tx] < 7) !== this.ishost) {
+                    moves.splice(i, 1);
+                    continue;
+                }
+            }
+        }
+        for (let i = 0; i < moves.length; i ++) {
+            moves[i] = moves[i].join(",");
+        }
+        return moves;
+    }
+    bishop () {
+        let x = this.px;
+        let y = this.py;
+        let moves = [];
+        let sx = x;
+        let sy = y;
+        while (true) {
+            sx -= 1;
+            sy -= 1;
+            if (sx < 0 || sy < 0) {
+                break;
+            }
+            if (this.board[sy][sx] !== 0) {
+                if ((this.board[sy][sx] < 7) !== this.ishost) {
+                    moves.push([sx, sy]);
+                }
+                break;
+            }
+            moves.push([sx, sy]);
+        }
+        console.log(x, y);
+        sx = x;
+        sy = y;
+        while (true) {
+            sx += 1;
+            sy -= 1;
+            if (sx > 7 || sy < 0) {
+                break;
+            }
+            if (this.board[sy][sx] !== 0) {
+                if ((this.board[sy][sx] < 7) !== this.ishost) {
+                    moves.push([sx, sy]);
+                }
+                break;
+            }
+            moves.push([sx, sy]);
+        }
+        sx = x;
+        sy = y;
+        while (true) {
+            sx -= 1;
+            sy += 1;
+            if (sx < 0 || sy > 7) {
+                break;
+            }
+            if (this.board[sy][sx] !== 0) {
+                if ((this.board[sy][sx] < 7) !== this.ishost) {
+                    moves.push([sx, sy]);
+                }
+                break;
+            }
+            moves.push([sx, sy]);
+        }
+        sx = x;
+        sy = y;
+        while (true) {
+            sx += 1;
+            sy += 1;
+            if (sx > 7 || sy > 7) {
+                break;
+            }
+            if (this.board[sy][sx] !== 0) {
+                if ((this.board[sy][sx] < 7) !== this.ishost) {
+                    moves.push([sx, sy]);
+                }
+                break;
+            }
+            moves.push([sx, sy]);
+        }
+        for (let i = 0; i < moves.length; i ++) {
+            moves[i] = moves[i].join(",");
+        }
+        return moves;
+    }
+    queen () {
+        let x = this.px;
+        let y = this.py;
+        let moves = this.rook();
+        console.log(moves);
+        moves.push(...this.bishop());
+        console.log(moves);
+        return moves;
+    }
+    king () {
+        let x = this.px;
+        let y = this.py;
+        let moves = [[x-1, y-1], [x, y-1], [x+1, y-1], [x+1, y], [x+1, y+1], [x, y+1], [x-1, y+1], [x-1, y]];
+        for (let i = moves.length - 1; i >= 0; i --) {
+            let tx = moves[i][0];
+            let ty = moves[i][1];
+            if (tx < 0 || tx > 7 || ty < 0 || ty > 7) {
+                moves.splice(i, 1);
+                continue;
+            }
+            if (this.board[ty][tx] !== 0) {
+                if ((this.board[ty][tx] < 7) === this.ishost) {
+                    moves.splice(i, 1);
+                    continue;
+                }
+            }
+        }
+        y = this.ishost?7:0;
+        if (this.kcl) {
+            if (this.board[y][1] === 0 && this.board[y][2] === 0 && this.board[y][3] === 0) {
+                moves.push([1, y]);
+            }
+        }
+        if (this.kcr) {
+            if (this.board[y][5] === 0 && this.board[y][6] === 0) {
+                moves.push([6, y]);
+            }
+        }
+        for (let i = 0; i < moves.length; i ++) {
+            moves[i] = moves[i].join(",");
+        }
+        return moves;
     }
     move (mvs) {
         if (!this.turn) {
@@ -141,7 +398,36 @@ class Game {
         if (this.board[y1][x1] === 0 || iw !== this.ishost) {
             return;
         }
+        let v = this.board[y1][x1];
+        if (v > 6) {
+            v -= 6;
+        }
+        this.px = x1;
+        this.py = y1;
+        const moves = (v>3?(v>5?this.king():(v>4?this.queen():this.bishop())):(v<2?this.pawn():(v<3?this.rook():this.knight())));
+        const ns = [x2,y2].join(",");
+        if (moves.indexOf(ns) < 0) {
+            return;
+        }
+        if (v === 6) {
+            if (ns === "1,"+y1) {
+                this.swap(0, y1, 2, y1);
+            } else if (ns === "6,"+y1) {
+                this.swap(7, y1, 5, y1);
+            }
+        } else if (v === 1 && y2 === (this.ishost?0:7)) {
+            document.getElementById("promote").showModal();
+            this.store = [x1, y1, x2, y2];
+            return;
+        }
         this.swap(x1, y1, x2, y2);
+        this.display();
+        socket.emit("move", this.format());
+        this.turn = false;
+    }
+    pcall () {
+        this.board[this.store[1]][this.store[0]] = Number(document.getElementById("proin").value)+(this.ishost?0:6);
+        this.swap(...this.store);
         this.display();
         socket.emit("move", this.format());
         this.turn = false;
@@ -204,6 +490,7 @@ function domove () {
 }
 
 input.addEventListener("keyup", (e) => {if(e.code.toString()==="Enter"){domove()}});
+document.getElementById("proin").addEventListener("keyup", (e) => {if(e.code.toString()==="Enter"){document.getElementById("prob").click()}});
 
 document.addEventListener("visibilitychange", (e) => {
     if (document.visibilityState === "visible") {
