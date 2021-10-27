@@ -10,6 +10,20 @@ for (let y = 0; y < 8; y ++) {
     }
 }
 
+board.children[0].src = "../assets/pieces/WR.svg";
+board.children[1].src = "../assets/pieces/BR.svg";
+board.children[2].src = "../assets/pieces/WN.svg";
+board.children[3].src = "../assets/pieces/BN.svg";
+board.children[4].src = "../assets/pieces/WB.svg";
+board.children[5].src = "../assets/pieces/BB.svg";
+board.children[6].src = "../assets/pieces/WP.svg";
+board.children[7].src = "../assets/pieces/BP.svg";
+board.children[8].src = "../assets/pieces/WK.svg";
+board.children[9].src = "../assets/pieces/BQ.svg";
+board.children[10].src = "../assets/pieces/WK.svg";
+board.children[11].src = "../assets/pieces/BK.svg";
+board.children[12].src = "../assets/pieces/E.svg";
+
 cdg.showModal();
 
 const socket = io.connect(window.location.origin, {query: `url=${window.location.href}`})
