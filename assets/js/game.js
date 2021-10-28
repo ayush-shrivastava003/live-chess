@@ -57,12 +57,19 @@ socket.on("nothost", () => {
     }
 })
 
+const session = window.sessionStorage;
+
 socket.on("start", () => {
     if (cdg.open) {
         cdg.close();
     }
 })
 
+socket.on("update", () => {
+    for (let i = 0; i < 2; i ++) {
+        socket.emit("move", game.format());
+    }
+})
 
 document.getElementById("roomcode").textContent = window.location.pathname.slice(1);
 
@@ -516,3 +523,20 @@ document.addEventListener("visibilitychange", (e) => {
         input.focus();
     }
 });
+
+if (session.getItem("washost") === null) {
+    session.setItem("washost", game.ishost);
+    session.setItem("wasturn", game.ishost);
+    session.setItem("ob", game.format());
+} else {
+    game.ishost = {"true":true,"false":false}[session.getItem("washost")];
+    game.turn = {"true":true,"false":false}[session.getItem("wasturn")];
+    game.unpack(session.getItem("ob"));
+}
+
+window.onbeforeunload = function () {
+    session.setItem("washost", game.ishost);
+    session.setItem("wasturn", game.turn);
+    session.setItem("ob", game.format());
+    socket.emit("exec", "console.log('unload')");
+}
