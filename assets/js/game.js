@@ -159,14 +159,18 @@ class Game {
                         moves.push([x, y-2]);
                     }
                 }
-                if (x > 0 && (this.board[y-1][x-1] > 6)) {
-                    moves.push([x-1, y-1]);
+                if (x > 0) {
+                    if (this.board[y-1][x-1] > 6) {
+                        moves.push([x-1, y-1]);
+                    } else if (this.board[y-1][x+1] === 0 && this.board[y][x+1] === 7) {
+                        moves.push([x+1, y-1]);
+                    }
                 }
                 if (x < 7) {
                     if (this.board[y-1][x+1] > 6) {
                         moves.push([x+1, y-1]);
-                    } else if (this.board[y-1][x+1] === 0 && this.board[y][x-1] === 7) {
-                        // moves.push([x-1, y-1]);
+                    } else if (this.board[y-1][x-1] === 0 && this.board[y][x-1] === 7) {
+                        moves.push([x-1, y-1]);
                     }
                 }
             }
@@ -177,11 +181,19 @@ class Game {
                     moves.push([x, y+2]);
                 }
             }
-            if (x > 0 && (this.board[y+1][x-1] > 0 && this.board[y+1][x-1] < 7)) {
-                moves.push([x-1, y+1]);
+            if (x > 0) {
+                if (this.board[y+1][x-1] > 0 && this.board[y+1][x-1] < 7) {
+                    moves.push([x-1, y+1]);
+                } else if (this.board[y+1][x+1] === 0 && this.board[y][x+1] === 1) {
+                    moves.push([x+1, y+1]);
+                }
             }
-            if (x < 7 && (this.board[y+1][x+1] > 0 && this.board[y+1][x-1] < 7)) {
-                moves.push([x+1, y+1]);
+            if (x < 7) {
+                if (this.board[y+1][x+1] > 0 && this.board[y+1][x-1] < 7) {
+                    moves.push([x+1, y+1]);
+                } else if (this.board[y+1][x-1] === 0 && this.board[y][x-1] === 1) {
+                    moves.push([x-1, y+1]);
+                }
             }
         }
         for (let i = 0; i < moves.length; i ++) {
@@ -408,6 +420,13 @@ class Game {
         const ns = [x2,y2].join(",");
         if (moves.indexOf(ns) < 0) {
             return;
+        }
+        if (v === 1 || v === 7) {
+            if (x2 !== x1) {
+                if (this.board[y2][x2] === 0) {
+                    this.board[y1][x2] = 0;
+                }
+            }
         }
         if (v === 6) {
             if (ns === "1,"+y1) {
