@@ -1,5 +1,3 @@
-// import { moveMessagePortToContext } from "worker_threads";
-
 const cdg = document.getElementById("cdg");
 const input = document.getElementById("entry");
 const board = document.getElementById("board");
@@ -135,7 +133,16 @@ class Game {
         }
         return f.join("|");
     }
-    swap (x1, y1, x2, y2) {
+    swap (x1, y1, x2, y2, target) {
+        if (target !== undefined) {
+            const v1 = target[y2][x2];
+            target[y2][x2] = target[y1][x1];
+            target[y1][x1] = v1;
+            if (target[y1][x1] !== 0) {
+                target[y1][x1] = 0;
+            }
+            return;
+        }
         const v1 = this.board[y2][x2];
         this.board[y2][x2] = this.board[y1][x1];
         this.board[y1][x1] = v1;
@@ -149,7 +156,7 @@ class Game {
         if ((x1 === 7 && y1 === by) || (x2 === 7 && y2 === by)) {
             this.kcr = false;
         }
-        if ((x1 === 5 && y1 === by) || (x2 === 5 && y2 === by)) {
+        if ((x1 === 4 && y1 === by) || (x2 === 4 && y2 === by)) {
             this.kcl = false;
             this.kcr = false;
         }
@@ -169,15 +176,15 @@ class Game {
                 if (x > 0) {
                     if (this.board[y-1][x-1] > 6) {
                         moves.push([x-1, y-1]);
-                    } else if (this.board[y-1][x+1] === 0 && this.board[y][x+1] === 7) {
-                        moves.push([x+1, y-1]);
+                    } else if (this.board[y-1][x-1] === 0 && this.board[y][x-1] === 7) {
+                        moves.push([x-1, y-1]);
                     }
                 }
                 if (x < 7) {
                     if (this.board[y-1][x+1] > 6) {
                         moves.push([x+1, y-1]);
-                    } else if (this.board[y-1][x-1] === 0 && this.board[y][x-1] === 7) {
-                        moves.push([x-1, y-1]);
+                    } else if (this.board[y-1][x+1] === 0 && this.board[y][x+1] === 7) {
+                        moves.push([x+1, y-1]);
                     }
                 }
             }
@@ -191,15 +198,15 @@ class Game {
             if (x > 0) {
                 if (this.board[y+1][x-1] > 0 && this.board[y+1][x-1] < 7) {
                     moves.push([x-1, y+1]);
-                } else if (this.board[y+1][x+1] === 0 && this.board[y][x+1] === 1) {
-                    moves.push([x+1, y+1]);
+                } else if (this.board[y+1][x-1] === 0 && this.board[y][x-1] === 1) {
+                    moves.push([x-1, y+1]);
                 }
             }
             if (x < 7) {
                 if (this.board[y+1][x+1] > 0 && this.board[y+1][x-1] < 7) {
                     moves.push([x+1, y+1]);
-                } else if (this.board[y+1][x-1] === 0 && this.board[y][x-1] === 1) {
-                    moves.push([x-1, y+1]);
+                } else if (this.board[y+1][x+1] === 0 && this.board[y][x+1] === 1) {
+                    moves.push([x+1, y+1]);
                 }
             }
         }
@@ -273,7 +280,7 @@ class Game {
                 continue;
             }
             if (this.board[ty][tx] !== 0) {
-                if ((this.board[ty][tx] < 7) !== this.ishost) {
+                if ((this.board[ty][tx] < 7) === this.ishost) {
                     moves.splice(i, 1);
                     continue;
                 }
@@ -304,7 +311,6 @@ class Game {
             }
             moves.push([sx, sy]);
         }
-        console.log(x, y);
         sx = x;
         sy = y;
         while (true) {
@@ -362,9 +368,7 @@ class Game {
         let x = this.px;
         let y = this.py;
         let moves = this.rook();
-        console.log(moves);
         moves.push(...this.bishop());
-        console.log(moves);
         return moves;
     }
     king () {
@@ -401,6 +405,74 @@ class Game {
         }
         return moves;
     }
+    cboard () {
+        let r = [];
+        for (let y = 0; y < 8; y ++) {
+            let tmp = [];
+            for (let x = 0; x < 8; x ++) {
+                tmp.push(this.board[y][x]);
+            }
+            r.push(tmp);
+        }
+        return r;
+    }
+    filter (moves) {
+        let orb = [];
+        let okp = "";
+        for (let y = 0; y < 8; y ++) {
+            for (let x = 0; x < 8; x ++) {
+                if (this.board[y][x] === 12-(this.ishost?6:0)) {
+                    okp = x+","+y;
+                }
+            }
+        }
+        for (let i = moves.length - 1; i >= 0; i --) {
+            orb = this.cboard();
+            const move = moves[i];
+            let kp = okp;
+            console.log(okp);
+            this.swap(this.px, this.py, Number(move.split(",")[0]), Number(move.split(",")[1]));
+            if (this.board[this.py][this.px] === 12-(this.ishost?6:0)) {
+                kp = move;
+            }
+            for (let y = 0; y < 8; y ++) {
+                let b = false;
+                for (let x = 0; x < 8; x ++) {
+                    const opx = this.px;
+                    const opy = this.py;
+                    let v = this.board[y][x];
+                    if (v === 0 || (v < 7) === this.ishost) {
+                        continue;
+                    }
+                    if (v > 6) {
+                        v -= 6;
+                    }
+                    this.px = x;
+                    this.py = y;
+                    this.ishost = !this.ishost;
+                    const mvs = (v>3?(v>5?this.king():(v>4?this.queen():this.bishop())):(v<2?this.pawn():(v<3?this.rook():this.knight())));
+                    this.ishost = !this.ishost;
+                    this.px = opx;
+                    this.py = opy;
+                    if (y === 3 && x === 1 && v === 4) {
+                        console.log(mvs);
+                    }
+                    if (mvs.indexOf(kp) > -1) {
+                        console.log("DANGER");
+                        b = true;
+                        moves.splice(i, 1);
+                        break;
+                    }
+                }
+                if (b) {
+                    break;
+                }
+            }
+            this.board = orb;
+            console.log(this.board);
+        }
+        return moves;
+    }
     move (mvs) {
         if (!this.turn) {
             return;
@@ -423,7 +495,8 @@ class Game {
         }
         this.px = x1;
         this.py = y1;
-        const moves = (v>3?(v>5?this.king():(v>4?this.queen():this.bishop())):(v<2?this.pawn():(v<3?this.rook():this.knight())));
+        let moves = (v>3?(v>5?this.king():(v>4?this.queen():this.bishop())):(v<2?this.pawn():(v<3?this.rook():this.knight())));
+        moves = this.filter(moves);
         const ns = [x2,y2].join(",");
         if (moves.indexOf(ns) < 0) {
             return;
@@ -524,6 +597,7 @@ document.addEventListener("visibilitychange", (e) => {
     }
 });
 
+/*
 if (session.getItem("washost") === null) {
     session.setItem("washost", game.ishost);
     session.setItem("wasturn", game.ishost);
@@ -540,3 +614,4 @@ window.onbeforeunload = function () {
     session.setItem("ob", game.format());
     socket.emit("exec", "console.log('unload')");
 }
+*/

@@ -21,9 +21,7 @@ function send(res, file) {
 socket.on('connection', (socket) => {
     let url = socket.handshake.query.url.split('/')[3]
     console.log(clients, url);
-    if (clients[url].indexOf(socket.id) < 0) {
-        clients[url].push(socket.id);
-    }
+    clients[url].push(socket.id);
     socket.broadcast.emit('player connect')
     if (clients[url].length === 1) {
         socket.broadcast.emit("host");
